@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NIETZSCHE — The Abyss Stares Back</title>
+  <meta name="description" content="An immersive journey through Nietzsche's life, philosophy, and abyss." />
+  <meta name="theme-color" content="#050508" />
+
+  <!-- FONTS: Cinzel (Roman epic) · Cormorant Garamond (literary) · Space Grotesk (UI) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            void:     '#050508',
+            abyss:    '#0a0a0f',
+            surface:  '#111116',
+            deep:     '#1a1a22',
+            crimson:  '#8B0000',
+            blood:    '#b01a1a',
+            ember:    '#d42030',
+            gold:     '#c9a84c',
+            'gold-d': '#7a6030',
+            'gold-b': '#f0c866',
+            storm:    '#2a2d3a',
+            electric: '#00d2ff',
+            parch:    '#d4c5a0',
+            'parch-d':'#8a7a60',
+          },
+          fontFamily: {
+            display: ['"Cinzel Decorative"', 'serif'],
+            title:   ['"Cinzel"', 'serif'],
+            serif:   ['"Cormorant Garamond"', 'Georgia', 'serif'],
+            sans:    ['"Space Grotesk"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── RESET & BASE ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: #050508; color: #d4c5a0;
+      font-family: "Cormorant Garamond", serif;
+      overflow-x: hidden; -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: #8B0000; color: #f0c866; }
+    @media (hover: hover) and (pointer: fine) {
+      html.has-cursor, html.has-cursor * { cursor: none !important; }
+    }
+
+    /* ── CURSOR ───────────────────────────────────────────────── */
+    #cursor-dot {
+      position: fixed; top: 0; left: 0; width: 8px; height: 8px;
+      background: #c9a84c; border-radius: 50%; pointer-events: none;
+      z-index: 9999; transform: translate(-50%,-50%);
+      will-change: transform; mix-blend-mode: screen;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0; width: 42px; height: 42px;
+      border: 1px solid rgba(201,168,76,.45); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: width .3s ease, height .3s ease, border-color .3s ease, border-style .3s ease;
+    }
+    #cursor-ring.is-hover  { width: 72px; height: 72px; border-color: rgba(201,168,76,.9); }
+    #cursor-ring.is-abyss  { width: 52px; height: 52px; border-color: rgba(180,20,30,.8); border-style: dashed; }
+    #cursor-ring.is-blood  { border-color: rgba(212,32,48,.9); }
+    @media (hover: none) { #cursor-dot, #cursor-ring { display: none; } }
+
+    /* ── LOADER ───────────────────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0; z-index: 10000; background: #050508;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 28px;
+      transition: opacity .9s ease, visibility .9s ease;
+    }
+    #loader.done { opacity: 0; visibility: hidden; }
+    #loader .l-sym {
+      font-family: "Cinzel", serif; font-size: 2rem;
+      color: #c9a84c; letter-spacing: .6em;
+      animation: lpulse 2s ease-in-out infinite;
+    }
+    @keyframes lpulse { 0%,100%{opacity:.25} 50%{opacity:1} }
+    #loader .l-bar-w { width: 200px; height: 1px; background: rgba(201,168,76,.15); }
+    #loader .l-bar   { height: 100%; width: 0%; background: #c9a84c; box-shadow: 0 0 12px rgba(201,168,76,.6); }
+    #loader .l-txt   { font-family:"Space Grotesk",sans-serif; font-size:10px; letter-spacing:.5em; color:rgba(201,168,76,.4); text-transform:uppercase; }
+
+    /* ── PROGRESS BAR ─────────────────────────────────────────── */
+    #pb {
+      position: fixed; top: 0; left: 0; height: 1px; width: 0%; z-index: 9998;
+      background: linear-gradient(to right, #8B0000, #c9a84c, #8B0000);
+      box-shadow: 0 0 6px rgba(201,168,76,.5);
+    }
+
+    /* ── GRAIN ────────────────────────────────────────────────── */
+    .grain {
+      position: fixed; inset: 0; pointer-events: none; z-index: 998;
+      opacity: .045; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ── PORTAL OVERLAY ───────────────────────────────────────── */
+    #portal {
+      position: fixed; z-index: 9990;
+      width: 6px; height: 6px; border-radius: 50%;
+      background: #050508; pointer-events: none;
+      opacity: 0; transform: translate(-50%,-50%) scale(0);
+    }
+
+    /* ── TYPOGRAPHY ───────────────────────────────────────────── */
+    .t-display { font-family: "Cinzel Decorative", serif; }
+    .t-title   { font-family: "Cinzel", serif; }
+    .t-serif   { font-family: "Cormorant Garamond", serif; }
+    .t-eye     { font-family: "Space Grotesk", sans-serif; font-size: 10px; letter-spacing: .4em; text-transform: uppercase; color: rgba(201,168,76,.5); }
+
+    /* ── NAV LINK ─────────────────────────────────────────────── */
+    .nl { position: relative; transition: color .3s; }
+    .nl::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 1px;
+      background: #c9a84c; transform: scaleX(0); transform-origin: right;
+      transition: transform .5s cubic-bezier(.7,0,.2,1);
+    }
+    .nl:hover { color: #c9a84c; }
+    .nl:hover::after, .nl.is-active::after { transform: scaleX(1); transform-origin: left; }
+    .nl.is-active { color: #c9a84c; }
+
+    /* ── HERO ─────────────────────────────────────────────────── */
+    #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .hero-vig {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse at 50% 60%, transparent 20%, rgba(5,5,8,.55) 55%, rgba(5,5,8,.97) 90%),
+        linear-gradient(180deg, rgba(5,5,8,.85) 0%, transparent 15%, transparent 72%, rgba(5,5,8,.95) 100%);
+    }
+
+    /* LIGHTNING */
+    .lbolt {
+      position: absolute; top: 0; width: 1px; pointer-events: none; z-index: 4;
+      background: linear-gradient(180deg, transparent, rgba(200,220,255,.95) 30%, rgba(200,220,255,.6) 70%, transparent);
+      transform-origin: top center; opacity: 0;
+    }
+
+    /* SPLIT TEXT */
+    .sl { overflow: hidden; display: block; line-height: .88; }
+    .sl > .sli { display: block; }
+
+    /* ENTER BUTTON */
+    .enter-btn {
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(201,168,76,.35);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 10px; letter-spacing: .45em; text-transform: uppercase;
+      color: #c9a84c; padding: 18px 52px; background: transparent;
+      cursor: none; transition: border-color .4s, color .4s;
+    }
+    .enter-btn::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(135deg, #8B0000, #5a0000);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .5s cubic-bezier(.7,0,.2,1);
+    }
+    .enter-btn:hover { border-color: #8B0000; color: #f0c866; }
+    .enter-btn:hover::before { transform: scaleX(1); }
+    .enter-btn span { position: relative; z-index: 1; }
+
+    /* ── SECTION ELEMENTS ─────────────────────────────────────── */
+    .sec-hl { width: 60px; height: 1px; background: linear-gradient(to right, #c9a84c, transparent); }
+    .glass {
+      background: rgba(17,17,22,.75); backdrop-filter: blur(10px);
+      border: 1px solid rgba(201,168,76,.14);
+    }
+
+    /* ── TIMELINE ─────────────────────────────────────────────── */
+    .tl-rail {
+      position: absolute; top: 0; bottom: 0; left: 50%; width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(201,168,76,.18) 8%, rgba(201,168,76,.18) 92%, transparent);
+    }
+    .tl-prog {
+      position: absolute; top: 0; left: 50%; width: 1px; height: 0%;
+      background: #c9a84c; box-shadow: 0 0 12px rgba(201,168,76,.5);
+    }
+    .tl-dot {
+      width: 12px; height: 12px;
+      border: 1px solid rgba(201,168,76,.5); border-radius: 50%;
+      position: absolute; left: 50%; transform: translateX(-50%);
+      background: #050508; transition: background .4s, box-shadow .4s;
+      z-index: 2;
+    }
+    .tl-dot.lit { background: #c9a84c; box-shadow: 0 0 16px rgba(201,168,76,.7); }
+
+    /* ── CONCEPT CARD ─────────────────────────────────────────── */
+    .cc {
+      background: rgba(17,17,22,.8); border: 1px solid rgba(201,168,76,.12);
+      backdrop-filter: blur(8px); position: relative; overflow: hidden;
+      transition: border-color .5s ease;
+    }
+    .cc::before {
+      content: ""; position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(420px circle at var(--mx,50%) var(--my,50%),
+                  rgba(139,0,0,.18), transparent 50%);
+      opacity: 0; transition: opacity .4s;
+    }
+    .cc::after {
+      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, #c9a84c, transparent);
+      transform: scaleX(0); transform-origin: left; transition: transform .6s ease;
+    }
+    .cc:hover { border-color: rgba(201,168,76,.4); }
+    .cc:hover::before { opacity: 1; }
+    .cc:hover::after  { transform: scaleX(1); }
+    .cc > * { position: relative; z-index: 1; }
+
+    /* Eternal Recurrence SVG wheel */
+    #wheel-svg { animation: wspin 22s linear infinite; transform-origin: center; }
+    .wheel-wrap:hover #wheel-svg { animation-duration: 6s; }
+
+    @keyframes wspin { to { transform: rotate(360deg); } }
+
+    /* Will to Power bar */
+    .pow-bar {
+      width: 100%; height: 3px; background: rgba(201,168,76,.12);
+      position: relative; overflow: hidden;
+    }
+    .pow-fill {
+      position: absolute; top: 0; left: 0; height: 100%;
+      background: linear-gradient(to right, #8B0000, #c9a84c);
+      box-shadow: 0 0 8px rgba(201,168,76,.5);
+      width: 0%; transition: width .8s cubic-bezier(.7,0,.2,1);
+    }
+
+    /* Metamorphosis cards */
+    .morph-c {
+      border: 1px solid rgba(201,168,76,.12);
+      transition: border-color .5s, background .5s;
+    }
+    .morph-c.active {
+      border-color: rgba(201,168,76,.5) !important;
+      background: rgba(30,20,8,.8) !important;
+    }
+
+    /* ── WORKS ────────────────────────────────────────────────── */
+    .wk {
+      position: relative; overflow: hidden;
+      border: 1px solid rgba(201,168,76,.1);
+      background: rgba(17,17,22,.9);
+      transition: border-color .4s, transform .4s cubic-bezier(.2,.8,.2,1);
+      transform-style: preserve-3d;
+    }
+    .wk:hover { border-color: rgba(139,0,0,.5); }
+    .wk .wk-reveal {
+      position: absolute; inset: 0; padding: 20px;
+      background: rgba(5,5,8,.92);
+      clip-path: inset(100% 0 0 0);
+      transition: clip-path .5s cubic-bezier(.7,0,.2,1);
+      display: flex; flex-direction: column; justify-content: flex-end;
+    }
+    .wk:hover .wk-reveal { clip-path: inset(0% 0 0 0); }
+
+    /* ── THE ABYSS ────────────────────────────────────────────── */
+    .aph {
+      position: absolute;
+      font-family: "Cormorant Garamond", serif; font-style: italic;
+      color: rgba(212,197,160,.09); pointer-events: none; user-select: none;
+      line-height: 1.4; transition: color .4s;
+    }
+    .aph:hover { color: rgba(212,197,160,.35); pointer-events: auto; }
+    #abyss-canvas-2d { position: absolute; inset: 0; width: 100%; height: 100%; opacity: .35; }
+
+    /* ── LEGACY ───────────────────────────────────────────────── */
+    .leg-card {
+      border: 1px solid rgba(201,168,76,.1);
+      background: rgba(17,17,22,.7);
+      transition: border-color .4s, background .4s;
+    }
+    .leg-card:hover { border-color: rgba(201,168,76,.35); background: rgba(26,20,10,.8); }
+
+    /* ── MOBILE MENU ──────────────────────────────────────────── */
+    #mmenu {
+      position: fixed; inset: 0; z-index: 80; background: #050508;
+      transform: translateY(-100%); visibility: hidden;
+      transition: transform .8s cubic-bezier(.7,0,.2,1), visibility 0s .8s;
+    }
+    #mmenu.open { transform: none; visibility: visible; transition-delay: 0s, 0s; }
+
+    /* ── AUDIO ────────────────────────────────────────────────── */
+    .aud-btn {
+      width: 38px; height: 38px; border-radius: 50%;
+      border: 1px solid rgba(201,168,76,.28);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .3s, background .3s; cursor: none;
+    }
+    .aud-btn.on { border-color: #c9a84c; background: rgba(201,168,76,.1); }
+
+    /* ── SCROLL CUE ───────────────────────────────────────────── */
+    .scue { animation: scue 2.5s ease-in-out infinite; }
+    @keyframes scue { 0%,100%{transform:translateY(0);opacity:.4} 50%{transform:translateY(8px);opacity:.9} }
+
+    /* ── HAIRLINES ────────────────────────────────────────────── */
+    .hl { border-color: rgba(201,168,76,.12) !important; }
+
+    /* ── MAGNETIC ─────────────────────────────────────────────── */
+    .mag { display: inline-block; transition: transform .35s cubic-bezier(.2,.8,.2,1); }
+
+    /* ── GLOW TEXT ────────────────────────────────────────────── */
+    .glow-gold    { text-shadow: 0 0 40px rgba(201,168,76,.45); }
+    .glow-crimson { text-shadow: 0 0 40px rgba(139,0,0,.6); }
+
+    /* ── REDUCED MOTION ───────────────────────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration:.001ms!important; transition-duration:.001ms!important; }
+    }
+  </style>
+</head>
+<body class="bg-void text-parch overflow-x-hidden">
+
+<!-- ── HIDDEN SVG DEFS ─────────────────────────────────────────── -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="wk-blur">
+      <feGaussianBlur stdDeviation="0.5"/>
+    </filter>
+  </defs>
+</svg>
+
+<!-- ── LOADER ─────────────────────────────────────────────────── -->
+<div id="loader" aria-hidden="true">
+  <div class="l-sym">✦ N ✦</div>
+  <div class="l-bar-w"><div class="l-bar" id="lbar"></div></div>
+  <div class="l-txt" id="lpct">0%</div>
+</div>
+
+<!-- ── CURSOR ─────────────────────────────────────────────────── -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ── PROGRESS + GRAIN ───────────────────────────────────────── -->
+<div id="pb"></div>
+<div class="grain"></div>
+
+<!-- ── PORTAL ─────────────────────────────────────────────────── -->
+<div id="portal"></div>
+
+<!-- ── NAV ────────────────────────────────────────────────────── -->
+<header id="nav" class="fixed top-0 left-0 right-0 z-40">
+  <div class="flex items-center justify-between px-6 md:px-10 py-5">
+    <a href="#hero" class="t-title text-parch text-sm tracking-[.3em] hover:text-gold-b transition-colors">F&nbsp;·&nbsp;N</a>
+    <nav class="hidden md:flex items-center gap-9 t-eye">
+      <a href="#timeline" class="nl text-parch-d">Life</a>
+      <a href="#concepts" class="nl text-parch-d">Philosophy</a>
+      <a href="#works"    class="nl text-parch-d">Works</a>
+      <a href="#abyss"   class="nl text-parch-d">The Abyss</a>
+      <a href="#legacy"  class="nl text-parch-d">Legacy</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <button class="aud-btn" id="aud-btn" aria-label="Ambient sound">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" class="text-gold">
+          <path d="M1 5.5h3l4-4v13l-4-4H1V5.5z"/><path class="aud-wave" d="M11 4.5c1.5 1 2.5 2.5 2.5 3.5s-1 2.5-2.5 3.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <span class="hidden md:block t-eye">1844 — 1900</span>
+      <button id="mtog" aria-label="Menu" class="md:hidden flex flex-col gap-1.5 w-8 h-8 items-end justify-center">
+        <span class="block h-px w-6 bg-gold transition-all duration-300" id="m1"></span>
+        <span class="block h-px w-4 bg-gold transition-all duration-300" id="m2"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ── MOBILE MENU ─────────────────────────────────────────────── -->
+<div id="mmenu">
+  <div class="h-full flex flex-col px-8 pt-8 pb-10">
+    <div class="flex justify-between items-center mb-16">
+      <span class="t-title text-parch text-sm tracking-[.3em]">F&nbsp;·&nbsp;N</span>
+      <button id="mclose" class="t-eye text-gold">Close ✕</button>
+    </div>
+    <nav class="flex flex-col gap-8">
+      <a href="#timeline" class="t-title text-parch text-4xl">Life</a>
+      <a href="#concepts" class="t-title text-parch text-4xl">Philosophy</a>
+      <a href="#works"    class="t-title text-parch text-4xl">Works</a>
+      <a href="#abyss"    class="t-title text-parch text-4xl">The Abyss</a>
+      <a href="#legacy"   class="t-title text-parch text-4xl">Legacy</a>
+    </nav>
+    <p class="mt-auto t-serif italic text-parch-d text-lg">"Become who you are."</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §01 HERO
+     ══════════════════════════════════════════════════════════════ -->
+<section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+  <canvas id="hero-canvas" aria-hidden="true"></canvas>
+  <div class="hero-vig"></div>
+
+  <!-- Lightning bolts -->
+  <div class="lbolt" style="left:12%;height:55vh"></div>
+  <div class="lbolt" style="left:32%;height:38vh;width:2px"></div>
+  <div class="lbolt" style="right:18%;height:48vh"></div>
+  <div class="lbolt" style="right:40%;height:30vh;width:2px"></div>
+
+  <!-- Hero content -->
+  <div class="relative z-10 text-center px-6 max-w-6xl mx-auto">
+    <p class="t-eye mb-8 opacity-0" id="h-eye">Friedrich Nietzsche &nbsp;·&nbsp; Philosopher &nbsp;·&nbsp; 1844 — 1900</p>
+
+    <h1 style="line-height:.88">
+      <div class="sl">
+        <span class="sli t-title text-parch glow-gold" style="font-size:clamp(3.5rem,13vw,12rem); font-weight:900">THE ABYSS</span>
+      </div>
+      <div class="sl">
+        <span class="sli t-title text-parch-d" style="font-size:clamp(3.5rem,13vw,12rem); font-weight:900">STARES</span>
+      </div>
+      <div class="sl">
+        <span class="sli t-title text-gold glow-crimson" style="font-size:clamp(3.5rem,13vw,12rem); font-weight:900">BACK.</span>
+      </div>
+    </h1>
+
+    <p class="t-serif italic text-parch opacity-0 mt-8 max-w-xl mx-auto"
+       id="h-sub" style="font-size:clamp(1.1rem,2vw,1.5rem); opacity:.6">
+      And if you gaze long into an abyss, the abyss also gazes into you.
+    </p>
+
+    <button class="enter-btn mt-12 opacity-0" id="enter-btn">
+      <span>Enter the Abyss &nbsp;↓</span>
+    </button>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="absolute bottom-7 left-0 right-0 flex items-end justify-between px-8 z-20">
+    <span class="t-eye" style="opacity:.3">Sils Maria · 1881</span>
+    <div class="scue t-eye">Scroll ↓</div>
+    <span class="t-eye" style="opacity:.3">Der Abgrund</span>
+  </div>
+</section>
+
+<!-- MARQUEE ──────────────────────────────────────────────────── -->
+<div class="border-t border-b hl py-4 overflow-hidden bg-abyss">
+  <div style="display:flex;width:max-content;animation:mq 50s linear infinite">
+    <div class="flex items-center gap-10 pr-10 whitespace-nowrap t-title" style="font-size:clamp(1.2rem,2.5vw,2rem);color:rgba(201,168,76,.2)">
+      <span>Wille zur Macht</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Ewige Wiederkunft</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Übermensch</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Amor Fati</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Gott ist tot</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Jenseits von Gut und Böse</span><span class="text-crimson" style="opacity:.5">✦</span>
+    </div>
+    <div class="flex items-center gap-10 pr-10 whitespace-nowrap t-title" aria-hidden="true" style="font-size:clamp(1.2rem,2.5vw,2rem);color:rgba(201,168,76,.2)">
+      <span>Wille zur Macht</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Ewige Wiederkunft</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Übermensch</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Amor Fati</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Gott ist tot</span><span class="text-crimson" style="opacity:.5">✦</span>
+      <span>Jenseits von Gut und Böse</span><span class="text-crimson" style="opacity:.5">✦</span>
+    </div>
+  </div>
+</div>
+<style>@keyframes mq{to{transform:translateX(-50%)}}</style>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §02 LIFE TIMELINE
+     ══════════════════════════════════════════════════════════════ -->
+<section id="timeline" class="relative px-6 md:px-10 py-24 md:py-40 bg-abyss overflow-hidden">
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-16 md:mb-24 reveal">
+      <p class="t-eye mb-3">§ 02 — Life</p>
+      <h2 class="t-title text-parch" style="font-size:clamp(2.5rem,6vw,5rem); line-height:.9">
+        Fifty-Five Years.<br/><span class="text-gold-d" style="font-size:.6em">Eleven Lucid.</span>
+      </h2>
+      <div class="sec-hl mt-6"></div>
+    </div>
+
+    <div class="relative">
+      <div class="tl-rail hidden md:block"></div>
+      <div class="tl-prog hidden md:block"></div>
+
+      <div class="space-y-20 md:space-y-28">
+
+        <div class="tl-item grid md:grid-cols-2 gap-6 md:gap-16 pl-8 md:pl-0">
+          <div class="tl-dot hidden md:block" style="top:8px"></div>
+          <div class="md:text-right md:pr-16">
+            <div class="t-title text-gold text-2xl md:text-3xl">1844</div>
+            <h4 class="t-title text-parch text-xl mt-1">Born in Röcken</h4>
+          </div>
+          <p class="t-serif text-parch-d text-lg md:pl-16 leading-relaxed">Son of a Lutheran pastor in Saxon Prussia. His father dies of a brain ailment before Friedrich turns five — a shadow that follows him.</p>
+        </div>
+
+        <div class="tl-item grid md:grid-cols-2 gap-6 md:gap-16 pl-8 md:pl-0">
+          <div class="tl-dot hidden md:block" style="top:8px"></div>
+          <p class="t-serif text-parch-d text-lg md:order-2 md:pl-16 leading-relaxed">Studies under Friedrich Ritschl at Leipzig. Discovers Schopenhauer. Encounters Wagner. The two forces that will define and then betray him.</p>
+          <div class="md:order-1 md:text-right md:pr-16">
+            <div class="t-title text-gold text-2xl md:text-3xl">1865</div>
+            <h4 class="t-title text-parch text-xl mt-1">Leipzig · Schopenhauer</h4>
+          </div>
+        </div>
+
+        <div class="tl-item grid md:grid-cols-2 gap-6 md:gap-16 pl-8 md:pl-0">
+          <div class="tl-dot hidden md:block" style="top:8px"></div>
+          <div class="md:text-right md:pr-16">
+            <div class="t-title text-gold text-2xl md:text-3xl">1869</div>
+            <h4 class="t-title text-parch text-xl mt-1">Chair at Basel — Age 24</h4>
+          </div>
+          <p class="t-serif text-parch-d text-lg md:pl-16 leading-relaxed">Appointed full Professor of Classical Philology without completing his doctorate. The youngest ever. The establishment will not forgive <em>The Birth of Tragedy</em>.</p>
+        </div>
+
+        <div class="tl-item grid md:grid-cols-2 gap-6 md:gap-16 pl-8 md:pl-0">
+          <div class="tl-dot hidden md:block" style="top:8px"></div>
+          <p class="t-serif text-parch-d text-lg md:order-2 md:pl-16 leading-relaxed">Illness forces him to resign. Migraines, failing eyesight, nausea. He begins his wandering years — Sils-Maria, Nice, Genoa, Turin — writing in stolen hours between pain.</p>
+          <div class="md:order-1 md:text-right md:pr-16">
+            <div class="t-title text-gold text-2xl md:text-3xl">1879</div>
+            <h4 class="t-title text-parch text-xl mt-1">Resignation · Wandering</h4>
+          </div>
+        </div>
+
+        <div class="tl-item grid md:grid-cols-2 gap-6 md:gap-16 pl-8 md:pl-0">
+          <div class="tl-dot hidden md:block" style="top:8px"></div>
+          <div class="md:text-right md:pr-16">
+            <div class="t-title text-gold text-2xl md:text-3xl">1883–85</div>
+            <h4 class="t-title text-parch text-xl mt-1">Zarathustra</h4>
+          </div>
+          <p class="t-serif text-parch-d text-lg md:pl-16 leading-relaxed">Written in four bursts of ten days each. The Übermensch descends from the mountain. Almost no one reads it. Nietzsche publishes the fourth part at his own expense.</p>
+        </div>
+
+        <div class="tl-item grid md:grid-cols-2 gap-6 md:gap-16 pl-8 md:pl-0">
+          <div class="tl-dot hidden md:block" style="top:8px"></div>
+          <p class="t-serif text-parch-d text-lg md:order-2 md:pl-16 leading-relaxed">In the Piazza Carlo Alberto, Turin, he collapses — throws his arms around a flogged horse. He writes one last letter signing himself "Dionysus" and "The Crucified." The hammer falls silent.</p>
+          <div class="md:order-1 md:text-right md:pr-16">
+            <div class="t-title text-gold text-2xl md:text-3xl">1889</div>
+            <h4 class="t-title text-parch text-xl mt-1 text-blood">Turin · Collapse</h4>
+          </div>
+        </div>
+
+        <div class="tl-item grid md:grid-cols-2 gap-6 md:gap-16 pl-8 md:pl-0">
+          <div class="tl-dot hidden md:block" style="top:8px"></div>
+          <div class="md:text-right md:pr-16">
+            <div class="t-title text-gold text-2xl md:text-3xl">1900</div>
+            <h4 class="t-title text-parch text-xl mt-1">Weimar · Silence</h4>
+          </div>
+          <p class="t-serif text-parch-d text-lg md:pl-16 leading-relaxed">Dies in Weimar at fifty-five. The twentieth century, which he had seen coming, begins. His sister, Elisabeth, curates his legacy with devastating distortions.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §03 CORE PHILOSOPHY
+     ══════════════════════════════════════════════════════════════ -->
+<section id="concepts" class="relative px-6 md:px-10 py-24 md:py-40 bg-void">
+  <div class="max-w-6xl mx-auto">
+    <div class="mb-16 md:mb-20 reveal">
+      <p class="t-eye mb-3">§ 03 — Philosophy</p>
+      <h2 class="t-title text-parch" style="font-size:clamp(2.5rem,6vw,5rem); line-height:.9">The Six<br/>Hammers</h2>
+      <div class="sec-hl mt-6"></div>
+    </div>
+
+    <!-- Concept grid 3×2 -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-px" style="background:rgba(201,168,76,.07)">
+
+      <!-- 1. Eternal Recurrence -->
+      <div class="cc p-8 md:p-10 wheel-wrap" style="min-height:320px">
+        <div class="flex justify-between items-start mb-6">
+          <span class="t-eye">i. &nbsp; 1882</span>
+          <!-- Rotating SVG wheel -->
+          <svg id="wheel-svg" viewBox="0 0 60 60" width="48" height="48" fill="none">
+            <circle cx="30" cy="30" r="27" stroke="rgba(201,168,76,.3)" stroke-width="1"/>
+            <circle cx="30" cy="30" r="4" fill="rgba(201,168,76,.6)"/>
+            <line x1="30" y1="3" x2="30" y2="57" stroke="rgba(201,168,76,.18)" stroke-width="1"/>
+            <line x1="3" y1="30" x2="57" y2="30" stroke="rgba(201,168,76,.18)" stroke-width="1"/>
+            <line x1="9" y1="9" x2="51" y2="51" stroke="rgba(201,168,76,.18)" stroke-width="1"/>
+            <line x1="51" y1="9" x2="9" y2="51" stroke="rgba(201,168,76,.18)" stroke-width="1"/>
+            <path d="M 30 3 A 27 27 0 0 1 57 30" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 class="t-title text-parch text-2xl md:text-3xl">Ewige<br/>Wiederkunft</h3>
+        <p class="t-eye mt-1 mb-4">Eternal Recurrence</p>
+        <p class="t-serif text-parch-d text-base leading-relaxed">Live as though this moment — exactly this — must repeat infinitely. Not cosmology, but the heaviest test of life-affirmation ever conceived.</p>
+      </div>
+
+      <!-- 2. Will to Power -->
+      <div class="cc p-8 md:p-10" style="min-height:320px" id="pow-card">
+        <div class="flex justify-between items-start mb-6">
+          <span class="t-eye">ii. &nbsp; posth.</span>
+        </div>
+        <h3 class="t-title text-parch text-2xl md:text-3xl">Wille<br/>zur Macht</h3>
+        <p class="t-eye mt-1 mb-6">Will to Power</p>
+        <div class="space-y-3 mb-4">
+          <div class="flex justify-between t-eye mb-1"><span>Physical</span><span id="p1v">0%</span></div>
+          <div class="pow-bar"><div class="pow-fill" id="p1" style="width:0%"></div></div>
+          <div class="flex justify-between t-eye mb-1"><span>Intellectual</span><span id="p2v">0%</span></div>
+          <div class="pow-bar"><div class="pow-fill" id="p2" style="width:0%"></div></div>
+          <div class="flex justify-between t-eye mb-1"><span>Creative</span><span id="p3v">0%</span></div>
+          <div class="pow-bar"><div class="pow-fill" id="p3" style="width:0%"></div></div>
+        </div>
+        <p class="t-serif text-parch-d text-base leading-relaxed">Not domination — growth, overcoming, the discharge of strength. Hover to assert your will.</p>
+      </div>
+
+      <!-- 3. Übermensch -->
+      <div class="cc p-8 md:p-10" style="min-height:320px">
+        <div class="flex justify-between items-start mb-6">
+          <span class="t-eye">iii. &nbsp; 1883</span>
+        </div>
+        <h3 class="t-title text-parch text-2xl md:text-3xl">Über-<br/>mensch</h3>
+        <p class="t-eye mt-1 mb-4">The Overman</p>
+        <!-- Ascending visual: 3 ascending bars -->
+        <div class="flex items-end gap-2 mb-5" style="height:50px">
+          <div class="bg-gold-d rounded-sm flex-1 transition-all duration-700" style="height:30%;opacity:.3" id="ub1"></div>
+          <div class="bg-gold rounded-sm flex-1 transition-all duration-700" style="height:60%;opacity:.5" id="ub2"></div>
+          <div class="flex-1 rounded-sm transition-all duration-700" style="height:90%;background:#f0c866;opacity:.8;box-shadow:0 0 12px rgba(240,200,102,.4)" id="ub3"></div>
+        </div>
+        <p class="t-serif text-parch-d text-base leading-relaxed">Man is a rope across the abyss — a goal, not a stopping place. Not a race, but a demand: overcome yourself.</p>
+      </div>
+
+      <!-- 4. Nihilism -->
+      <div class="cc p-8 md:p-10" style="min-height:320px">
+        <div class="flex justify-between items-start mb-6">
+          <span class="t-eye">iv. &nbsp; 1887</span>
+        </div>
+        <h3 class="t-title text-parch text-2xl md:text-3xl">Nihilismus</h3>
+        <p class="t-eye mt-1 mb-4">Nihilism</p>
+        <p class="t-serif text-parch-d text-base leading-relaxed mb-4">Not his final word — his diagnosis. When God dies and metaphysics collapses, the void must be confronted. Nietzsche's task was to survive the abyss and build on its ruins.</p>
+        <blockquote class="t-serif italic text-parch text-sm border-l pl-4" style="border-color:rgba(139,0,0,.6)">"Nihilism stands at the door: whence comes this uncanniest of all guests?"</blockquote>
+      </div>
+
+      <!-- 5. Amor Fati -->
+      <div class="cc p-8 md:p-10" style="min-height:320px">
+        <div class="flex justify-between items-start mb-6">
+          <span class="t-eye">v. &nbsp; 1882</span>
+        </div>
+        <h3 class="t-title text-parch text-2xl md:text-3xl">Amor<br/>Fati</h3>
+        <p class="t-eye mt-1 mb-4">Love of Fate</p>
+        <p class="t-serif text-parch-d text-base leading-relaxed mb-5">Not stoic endurance — radical love. Every sorrow, every mistake, every wound: wanted, affirmed, embraced.</p>
+        <blockquote class="t-serif italic text-parch text-lg leading-relaxed" style="color:rgba(240,200,102,.8)">"My formula for greatness: amor fati — that one wants nothing to be different."</blockquote>
+      </div>
+
+      <!-- 6. Beyond Good and Evil -->
+      <div class="cc p-8 md:p-10" style="min-height:320px">
+        <div class="flex justify-between items-start mb-6">
+          <span class="t-eye">vi. &nbsp; 1886</span>
+        </div>
+        <h3 class="t-title text-parch text-2xl md:text-3xl">Jenseits von<br/>Gut und Böse</h3>
+        <p class="t-eye mt-1 mb-4">Beyond Good and Evil</p>
+        <p class="t-serif text-parch-d text-base leading-relaxed">Morality is not discovered — it is created. Every moral system is a symptom of the psyche that produced it. The philosopher's task: revalue all values.</p>
+      </div>
+
+    </div>
+
+    <!-- THE THREE METAMORPHOSES -->
+    <div class="mt-20 reveal">
+      <p class="t-eye mb-8">Three Metamorphoses of the Spirit — Thus Spoke Zarathustra, I.1</p>
+      <div class="grid md:grid-cols-3 gap-4">
+
+        <div class="morph-c p-8 bg-abyss" id="mc1">
+          <div class="t-title text-gold text-5xl mb-4" style="opacity:.6">🐪</div>
+          <h4 class="t-title text-parch text-xl mb-2">The Camel</h4>
+          <p class="t-eye mb-4" style="color:rgba(139,0,0,.7)">Burden · Reverence · Thou Shalt</p>
+          <p class="t-serif text-parch-d leading-relaxed">The spirit that kneels and willingly takes the heaviest loads — duty, morality, tradition. "What is difficult? asks the loadbearing spirit."</p>
+        </div>
+
+        <div class="morph-c p-8 bg-abyss" id="mc2">
+          <div class="t-title text-gold text-5xl mb-4" style="opacity:.8">🦁</div>
+          <h4 class="t-title text-parch text-xl mb-2">The Lion</h4>
+          <p class="t-eye mb-4" style="color:rgba(201,168,76,.7)">Freedom · Destruction · I Will</p>
+          <p class="t-serif text-parch-d leading-relaxed">The spirit that roars against the dragon "Thou Shalt" and tears away inherited values. It cannot create — but it can clear the ground.</p>
+        </div>
+
+        <div class="morph-c p-8 bg-abyss" id="mc3">
+          <div class="t-title text-gold-b text-5xl mb-4">👶</div>
+          <h4 class="t-title text-parch text-xl mb-2">The Child</h4>
+          <p class="t-eye mb-4" style="color:rgba(240,200,102,.8)">Creation · Play · New Beginning</p>
+          <p class="t-serif text-parch-d leading-relaxed">Innocence and forgetting, a new beginning, a game, a self-propelling wheel. The child creates new values — the sacred "Yes" to life.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §04 WORKS
+     ══════════════════════════════════════════════════════════════ -->
+<section id="works" class="relative px-6 md:px-10 py-24 md:py-40 bg-abyss">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex items-end justify-between mb-12 md:mb-20 gap-6 reveal">
+      <div>
+        <p class="t-eye mb-3">§ 04 — Works</p>
+        <h2 class="t-title text-parch" style="font-size:clamp(2.5rem,6vw,5rem); line-height:.9">The Library<br/>of Hammers</h2>
+      </div>
+      <p class="t-serif hidden md:block text-parch-d max-w-xs text-right" style="font-size:1.1rem">
+        Hover each spine. A quote waits inside.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+
+      <div class="wk" style="aspect-ratio:3/4">
+        <div class="p-5 h-full flex flex-col">
+          <div class="flex justify-between t-eye"><span>01</span><span>1872</span></div>
+          <div class="mt-auto">
+            <div class="t-title text-parch text-xl leading-tight">Die Geburt der Tragödie</div>
+            <div class="t-eye mt-1">Birth of Tragedy</div>
+          </div>
+        </div>
+        <div class="wk-reveal">
+          <p class="t-eye mb-2">Apollo &amp; Dionysus</p>
+          <p class="t-serif italic text-parch text-sm leading-relaxed">"The existence of the world is justified only as an aesthetic phenomenon."</p>
+        </div>
+      </div>
+
+      <div class="wk" style="aspect-ratio:3/4">
+        <div class="p-5 h-full flex flex-col">
+          <div class="flex justify-between t-eye"><span>02</span><span>1878</span></div>
+          <div class="mt-auto">
+            <div class="t-title text-parch text-xl leading-tight">Menschliches, Allzumenschliches</div>
+            <div class="t-eye mt-1">Human, All Too Human</div>
+          </div>
+        </div>
+        <div class="wk-reveal">
+          <p class="t-eye mb-2">Free Spirit</p>
+          <p class="t-serif italic text-parch text-sm leading-relaxed">"The higher we soar, the smaller we appear to those who cannot fly."</p>
+        </div>
+      </div>
+
+      <div class="wk" style="aspect-ratio:3/4">
+        <div class="p-5 h-full flex flex-col">
+          <div class="flex justify-between t-eye"><span>03</span><span>1882</span></div>
+          <div class="mt-auto">
+            <div class="t-title text-parch text-xl leading-tight">Die fröhliche Wissenschaft</div>
+            <div class="t-eye mt-1">The Gay Science</div>
+          </div>
+        </div>
+        <div class="wk-reveal">
+          <p class="t-eye mb-2">God is Dead</p>
+          <p class="t-serif italic text-parch text-sm leading-relaxed">"We have left the land and have embarked! We have burned our bridges behind us — indeed, we have gone farther."</p>
+        </div>
+      </div>
+
+      <div class="wk" style="aspect-ratio:3/4; border-color:rgba(201,168,76,.25)!important">
+        <div class="p-5 h-full flex flex-col" style="background:linear-gradient(160deg,rgba(30,15,5,.8),rgba(10,10,15,.8))">
+          <div class="flex justify-between t-eye"><span>04</span><span>1883</span></div>
+          <div class="mt-auto">
+            <div class="t-title text-gold-b text-xl leading-tight">Also sprach Zarathustra</div>
+            <div class="t-eye mt-1 text-gold">Thus Spoke Zarathustra</div>
+          </div>
+        </div>
+        <div class="wk-reveal">
+          <p class="t-eye text-gold mb-2">Masterwork</p>
+          <p class="t-serif italic text-parch text-sm leading-relaxed">"One must still have chaos in oneself to be able to give birth to a dancing star."</p>
+        </div>
+      </div>
+
+      <div class="wk" style="aspect-ratio:3/4">
+        <div class="p-5 h-full flex flex-col">
+          <div class="flex justify-between t-eye"><span>05</span><span>1886</span></div>
+          <div class="mt-auto">
+            <div class="t-title text-parch text-xl leading-tight">Jenseits von Gut und Böse</div>
+            <div class="t-eye mt-1">Beyond Good and Evil</div>
+          </div>
+        </div>
+        <div class="wk-reveal">
+          <p class="t-eye mb-2">Master Morality</p>
+          <p class="t-serif italic text-parch text-sm leading-relaxed">"He who fights with monsters should see to it that he himself does not become a monster."</p>
+        </div>
+      </div>
+
+      <div class="wk" style="aspect-ratio:3/4">
+        <div class="p-5 h-full flex flex-col">
+          <div class="flex justify-between t-eye"><span>06</span><span>1887</span></div>
+          <div class="mt-auto">
+            <div class="t-title text-parch text-xl leading-tight">Zur Genealogie der Moral</div>
+            <div class="t-eye mt-1">Genealogy of Morality</div>
+          </div>
+        </div>
+        <div class="wk-reveal">
+          <p class="t-eye mb-2">Ressentiment</p>
+          <p class="t-serif italic text-parch text-sm leading-relaxed">"To practice reprisal... requires the possession of wit, foresight, and above all, memory."</p>
+        </div>
+      </div>
+
+      <div class="wk" style="aspect-ratio:3/4">
+        <div class="p-5 h-full flex flex-col">
+          <div class="flex justify-between t-eye"><span>07</span><span>1889</span></div>
+          <div class="mt-auto">
+            <div class="t-title text-parch text-xl leading-tight">Götzen-Dämmerung</div>
+            <div class="t-eye mt-1">Twilight of the Idols</div>
+          </div>
+        </div>
+        <div class="wk-reveal">
+          <p class="t-eye mb-2">Anti-Platonism</p>
+          <p class="t-serif italic text-parch text-sm leading-relaxed">"Out of life's school of war: what does not kill me, makes me stronger."</p>
+        </div>
+      </div>
+
+      <div class="wk" style="aspect-ratio:3/4">
+        <div class="p-5 h-full flex flex-col">
+          <div class="flex justify-between t-eye"><span>08</span><span>1908</span></div>
+          <div class="mt-auto">
+            <div class="t-title text-parch text-xl leading-tight">Ecce Homo</div>
+            <div class="t-eye mt-1">posthumous</div>
+          </div>
+        </div>
+        <div class="wk-reveal">
+          <p class="t-eye mb-2">Self-Portrait</p>
+          <p class="t-serif italic text-parch text-sm leading-relaxed">"I am not a man, I am dynamite."</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §05 THE ABYSS
+     ══════════════════════════════════════════════════════════════ -->
+<section id="abyss" class="relative bg-void overflow-hidden" style="min-height:100vh; padding: 120px 0" data-cursor="abyss">
+  <canvas id="abyss-canvas-2d" aria-hidden="true"></canvas>
+
+  <!-- Scattered aphorisms -->
+  <p class="aph" style="top:8%;  left:4%;  font-size:clamp(.75rem,1.5vw,1rem); max-width:220px; transform:rotate(-3deg)">"Without music, life would be a mistake."</p>
+  <p class="aph" style="top:14%; right:5%; font-size:clamp(.7rem,1.2vw,.9rem);  max-width:200px; transform:rotate(2deg)">"In individuals, insanity is rare; but in groups, parties, nations and epochs, it is the rule."</p>
+  <p class="aph" style="top:30%; left:2%;  font-size:clamp(.8rem,1.4vw,1.1rem); max-width:240px; transform:rotate(-5deg)">"There are no facts, only interpretations."</p>
+  <p class="aph" style="top:55%; right:3%; font-size:clamp(.7rem,1.3vw,.95rem); max-width:220px; transform:rotate(4deg)">"The secret for harvesting from existence the greatest fruitfulness and greatest enjoyment is — to live dangerously."</p>
+  <p class="aph" style="top:72%; left:5%;  font-size:clamp(.75rem,1.4vw,1rem); max-width:200px; transform:rotate(-2deg)">"God is dead. God remains dead. And we have killed him."</p>
+  <p class="aph" style="top:85%; right:6%; font-size:clamp(.7rem,1.2vw,.9rem);  max-width:230px; transform:rotate(3deg)">"I am not a man, I am dynamite."</p>
+  <p class="aph" style="top:40%; left:60%;font-size:clamp(.7rem,1.1vw,.85rem);  max-width:180px; transform:rotate(-4deg)">"Faith: not wanting to know what is true."</p>
+  <p class="aph" style="top:20%; left:45%;font-size:clamp(.65rem,1vw,.8rem);   max-width:160px; transform:rotate(6deg)">"Madness is rare in individuals — but in groups, parties, it is the rule."</p>
+
+  <!-- Central abyss quote -->
+  <div class="relative z-10 flex items-center justify-center min-h-screen px-6 md:px-10">
+    <div class="max-w-4xl text-center">
+      <p class="t-eye mb-8" style="color:rgba(139,0,0,.7)">§ 05 — The Abyss</p>
+      <blockquote class="t-title text-parch reveal glow-crimson"
+                  style="font-size:clamp(1.5rem,3.5vw,3rem); line-height:1.3; font-weight:500">
+        "He who fights with monsters should see to it that he himself does not become a monster.
+        <br/><br/>
+        And if you gaze long into an abyss,
+        <span class="text-blood glow-crimson">the abyss also gazes into you.</span>"
+      </blockquote>
+      <div class="mt-12 flex items-center justify-center gap-6">
+        <div class="w-12 h-px" style="background:rgba(139,0,0,.6)"></div>
+        <span class="t-eye" style="color:rgba(139,0,0,.6)">Beyond Good and Evil · Aphorism 146</span>
+        <div class="w-12 h-px" style="background:rgba(139,0,0,.6)"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     §06 LEGACY
+     ══════════════════════════════════════════════════════════════ -->
+<section id="legacy" class="relative px-6 md:px-10 py-24 md:py-40 bg-abyss">
+  <div class="max-w-6xl mx-auto">
+    <div class="mb-12 md:mb-20 reveal">
+      <p class="t-eye mb-3">§ 06 — Legacy</p>
+      <h2 class="t-title text-parch" style="font-size:clamp(2.5rem,6vw,5rem); line-height:.9">The Reverb<br/>of the Hammer</h2>
+      <div class="sec-hl mt-6"></div>
+    </div>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      <div class="leg-card p-8 reveal">
+        <div class="t-eye mb-3" style="color:rgba(201,168,76,.5)">Existentialism</div>
+        <h4 class="t-title text-parch text-xl mb-4">Sartre · Camus · Heidegger</h4>
+        <p class="t-serif text-parch-d leading-relaxed">The idea that existence precedes essence — that humans must create their own meaning — is Nietzsche's legacy rewritten in the shadow of two world wars.</p>
+      </div>
+
+      <div class="leg-card p-8 reveal" style="transition-delay:.08s">
+        <div class="t-eye mb-3" style="color:rgba(201,168,76,.5)">Postmodernism</div>
+        <h4 class="t-title text-parch text-xl mb-4">Foucault · Derrida · Deleuze</h4>
+        <p class="t-serif text-parch-d leading-relaxed">Perspectivism and the genealogical method become the tools of deconstruction. Nietzsche's suspicion of grand narratives echoes through every postmodern critique.</p>
+      </div>
+
+      <div class="leg-card p-8 reveal" style="transition-delay:.16s">
+        <div class="t-eye mb-3" style="color:rgba(201,168,76,.5)">Literature &amp; Art</div>
+        <h4 class="t-title text-parch text-xl mb-4">Kafka · Yeats · Mann</h4>
+        <p class="t-serif text-parch-d leading-relaxed">The Übermensch haunts modernist fiction. Thomas Mann's <em>Doctor Faustus</em> is a direct confrontation. Kafka's alienation owes more to Nietzsche than to any sociologist.</p>
+      </div>
+
+      <div class="leg-card p-8 reveal">
+        <div class="t-eye mb-3" style="color:rgba(201,168,76,.5)">Music</div>
+        <h4 class="t-title text-parch text-xl mb-4">Strauss · Mahler · Delius</h4>
+        <p class="t-serif text-parch-d leading-relaxed">Richard Strauss's <em>Also sprach Zarathustra</em> (1896) made Nietzsche's vision audible. Mahler set his words. The Dionysian impulse entered the concert hall.</p>
+      </div>
+
+      <div class="leg-card p-8 reveal" style="transition-delay:.08s">
+        <div class="t-eye mb-3" style="color:rgba(139,0,0,.6)">Misappropriation</div>
+        <h4 class="t-title text-parch text-xl mb-4">The Nazi Distortion</h4>
+        <p class="t-serif text-parch-d leading-relaxed">Elisabeth Förster-Nietzsche's editorial manipulations handed a profound individualist philosopher to fascist ideology. Nietzsche, who despised German nationalism and antisemitism, could not defend himself.</p>
+      </div>
+
+      <div class="leg-card p-8 reveal" style="transition-delay:.16s">
+        <div class="t-eye mb-3" style="color:rgba(201,168,76,.5)">Counter-Culture</div>
+        <h4 class="t-title text-parch text-xl mb-4">1960s · Punk · Silicon Valley</h4>
+        <p class="t-serif text-parch-d leading-relaxed">From the hippies questioning authority to punk's nihilistic energy to Silicon Valley's "move fast and break things" — Nietzsche's self-overcoming appears in unexpected clothes.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     FOOTER
+     ══════════════════════════════════════════════════════════════ -->
+<footer class="relative px-6 md:px-10 pt-20 pb-10 border-t hl bg-void">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-12 gap-10 mb-16">
+      <div class="md:col-span-6">
+        <h2 class="t-title text-parch glow-gold" style="font-size:clamp(3rem,8vw,7rem); line-height:.88">
+          BECOME<br/><span class="text-gold-d" style="font-size:.75em">WHO YOU</span><br/>ARE.
+        </h2>
+        <p class="t-serif italic text-parch-d mt-6 max-w-sm" style="font-size:1.1rem">
+          Werde, wer du bist. — Pindar &amp; Nietzsche.<br/>
+          The hardest of all imperatives.
+        </p>
+      </div>
+      <div class="md:col-span-2">
+        <p class="t-eye mb-5">Concepts</p>
+        <ul class="space-y-2 t-serif text-parch-d" style="font-size:1rem">
+          <li><a href="#concepts" class="nl">Eternal Recurrence</a></li>
+          <li><a href="#concepts" class="nl">Will to Power</a></li>
+          <li><a href="#concepts" class="nl">Übermensch</a></li>
+          <li><a href="#concepts" class="nl">Amor Fati</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <p class="t-eye mb-5">Sources</p>
+        <ul class="space-y-2 t-serif text-parch-d" style="font-size:1rem">
+          <li><a href="https://plato.stanford.edu/entries/nietzsche/" target="_blank" rel="noopener" class="nl">SEP</a></li>
+          <li><a href="https://www.nietzschesource.org/" target="_blank" rel="noopener" class="nl">Nietzsche Source</a></li>
+          <li><a href="https://www.gutenberg.org/ebooks/author/779" target="_blank" rel="noopener" class="nl">Gutenberg</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <p class="t-eye mb-5">Navigate</p>
+        <ul class="space-y-2 t-serif text-parch-d" style="font-size:1rem">
+          <li><a href="#timeline" class="nl">§ 02 Life</a></li>
+          <li><a href="#concepts" class="nl">§ 03 Philosophy</a></li>
+          <li><a href="#works"    class="nl">§ 04 Works</a></li>
+          <li><a href="#abyss"   class="nl">§ 05 Abyss</a></li>
+          <li><a href="#legacy"  class="nl">§ 06 Legacy</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t hl pt-6 flex flex-wrap items-center justify-between gap-4 t-eye">
+      <span>Röcken · 15 Oct 1844 — Weimar · 25 Aug 1900</span>
+      <span>An editorial homage. Public domain texts.</span>
+      <a href="#hero" class="mag text-gold">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ── SCRIPTS ─────────────────────────────────────────────────── -->
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/three@0.134.0/build/three.min.js"></script>
+
+<script>
+/* ============================================================
+   1. LENIS + GSAP SYNC
+   ============================================================ */
+const lenis = new Lenis({
+  duration: 1.2, smoothWheel: true,
+  easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t))
+});
+(function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(0);
+gsap.registerPlugin(ScrollTrigger);
+lenis.on('scroll', ScrollTrigger.update);
+
+/* ============================================================
+   2. LOADER
+   ============================================================ */
+const lbarEl = document.getElementById('lbar');
+const lpctEl = document.getElementById('lpct');
+let pct = 0;
+const lInt = setInterval(() => {
+  pct = Math.min(pct + Math.random() * 13, 98);
+  lbarEl.style.width = pct + '%';
+  lpctEl.textContent = Math.floor(pct) + '%';
+}, 80);
+
+window.addEventListener('load', () => {
+  clearInterval(lInt);
+  lbarEl.style.width = '100%'; lpctEl.textContent = '100%';
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('done');
+    document.documentElement.classList.add('has-cursor');
+    initHeroGL();
+    initLightning();
+    playEntrance();
+  }, 600);
+});
+
+/* ============================================================
+   3. SCROLL PROGRESS
+   ============================================================ */
+const pbEl = document.getElementById('pb');
+window.addEventListener('scroll', () => {
+  const t = document.documentElement.scrollHeight - innerHeight;
+  if (t > 0) pbEl.style.width = (scrollY / t * 100) + '%';
+}, { passive: true });
+
+/* ============================================================
+   4. CUSTOM CURSOR
+   ============================================================ */
+const cDot  = document.getElementById('cursor-dot');
+const cRing = document.getElementById('cursor-ring');
+let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
+
+addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cDot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+}, { passive: true });
+
+(function tick() {
+  rx += (mx - rx) * 0.14; ry += (my - ry) * 0.14;
+  cRing.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+  requestAnimationFrame(tick);
+})();
+
+document.querySelectorAll('a,button,.wk,.cc,.leg-card,.morph-c,.mag').forEach(el => {
+  el.addEventListener('mouseenter', () => cRing.classList.add('is-hover'));
+  el.addEventListener('mouseleave', () => cRing.classList.remove('is-hover'));
+});
+
+// Abyss section: change cursor style
+ScrollTrigger.create({
+  trigger: '#abyss', start: 'top 50%', end: 'bottom 50%',
+  onToggle: s => {
+    if (s.isActive) { cRing.classList.add('is-abyss'); cDot.style.background = '#d42030'; }
+    else { cRing.classList.remove('is-abyss'); cDot.style.background = '#c9a84c'; }
+  }
+});
+
+/* ============================================================
+   5. MAGNETIC
+   ============================================================ */
+document.querySelectorAll('.mag').forEach(el => {
+  el.addEventListener('mousemove', e => {
+    const r = el.getBoundingClientRect();
+    el.style.transform = `translate(${(e.clientX - r.left - r.width/2) * .3}px, ${(e.clientY - r.top - r.height/2) * .3}px)`;
+  });
+  el.addEventListener('mouseleave', () => { el.style.transform = ''; });
+});
+
+/* ============================================================
+   6. MOBILE MENU
+   ============================================================ */
+const mmenu = document.getElementById('mmenu');
+const m1 = document.getElementById('m1'), m2 = document.getElementById('m2');
+function openMenu()  { mmenu.classList.add('open'); lenis.stop(); m1.style.transform='rotate(45deg) translate(4px,4px)'; m2.style.opacity='0'; }
+function closeMenu() { mmenu.classList.remove('open'); lenis.start(); m1.style.transform=''; m2.style.opacity=''; }
+document.getElementById('mtog').addEventListener('click', openMenu);
+document.getElementById('mclose').addEventListener('click', closeMenu);
+mmenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+/* ============================================================
+   7. ACTIVE NAV
+   ============================================================ */
+['timeline','concepts','works','abyss','legacy'].forEach(id => {
+  ScrollTrigger.create({
+    trigger: '#' + id, start: 'top 50%', end: 'bottom 50%',
+    onToggle: s => {
+      if (!s.isActive) return;
+      document.querySelectorAll('.nl').forEach(l => l.classList.remove('is-active'));
+      document.querySelectorAll(`.nl[href="#${id}"]`).forEach(l => l.classList.add('is-active'));
+    }
+  });
+});
+
+/* ============================================================
+   8. LENIS ANCHOR SCROLL
+   ============================================================ */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href');
+    if (id.length > 1 && document.querySelector(id)) {
+      e.preventDefault();
+      lenis.scrollTo(id, { offset: -30 });
+    }
+  });
+});
+
+/* ============================================================
+   9. HERO ENTRANCE
+   ============================================================ */
+function playEntrance() {
+  const tl = gsap.timeline({ delay: .15 });
+  tl.from('.sl .sli', { yPercent: 108, duration: 1.3, stagger: .08, ease: 'power4.out' })
+    .to('#h-eye',    { opacity: 1, y: 0, duration: .8, ease: 'power3.out' }, .3)
+    .to('#h-sub',    { opacity: .6, duration: .8, ease: 'power2.out' }, .8)
+    .to('#enter-btn',{ opacity: 1, duration: .6 }, 1.1)
+    .from('#nav',    { y: -28, opacity: 0, duration: 1, ease: 'power3.out' }, .4);
+}
+
+/* ============================================================
+   10. PORTAL TRANSITION on "Enter the Abyss" button
+   ============================================================ */
+document.getElementById('enter-btn').addEventListener('click', () => {
+  const btn = document.getElementById('enter-btn');
+  const pr  = document.getElementById('portal');
+  const br  = btn.getBoundingClientRect();
+  pr.style.left    = (br.left + br.width  / 2) + 'px';
+  pr.style.top     = (br.top  + br.height / 2) + 'px';
+  pr.style.opacity = 1;
+
+  gsap.to(pr, {
+    scale: 400, duration: 1.1, ease: 'power2.in',
+    onComplete: () => {
+      lenis.scrollTo('#timeline', { immediate: true });
+      gsap.to(pr, {
+        opacity: 0, duration: .7, delay: .1,
+        onComplete: () => { pr.style.transform = 'translate(-50%,-50%) scale(0)'; pr.style.opacity = 0; }
+      });
+    }
+  });
+});
+
+/* ============================================================
+   11. SCROLL REVEALS
+   ============================================================ */
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.from(el, {
+    y: 60, opacity: 0, duration: 1.2, ease: 'power3.out',
+    scrollTrigger: { trigger: el, start: 'top 85%' }
+  });
+});
+
+gsap.utils.toArray('.tl-item').forEach(el => {
+  gsap.from(el, {
+    y: 40, opacity: 0, duration: .9, ease: 'power3.out',
+    scrollTrigger: { trigger: el, start: 'top 87%' }
+  });
+});
+
+gsap.utils.toArray('.cc').forEach((el, i) => {
+  gsap.from(el, {
+    y: 50, opacity: 0, duration: .9, ease: 'power3.out', delay: (i % 3) * .07,
+    scrollTrigger: { trigger: el, start: 'top 88%' }
+  });
+});
+
+gsap.utils.toArray('.wk').forEach((el, i) => {
+  gsap.from(el, {
+    y: 60, opacity: 0, duration: 1, ease: 'power3.out', delay: (i % 4) * .08,
+    scrollTrigger: { trigger: el, start: 'top 90%' }
+  });
+});
+
+gsap.utils.toArray('.leg-card').forEach((el, i) => {
+  gsap.from(el, {
+    y: 40, opacity: 0, duration: .9, ease: 'power3.out', delay: (i % 3) * .07,
+    scrollTrigger: { trigger: el, start: 'top 88%' }
+  });
+});
+
+/* ============================================================
+   12. TIMELINE PROGRESS RAIL + DOTS
+   ============================================================ */
+ScrollTrigger.create({
+  trigger: '#timeline', start: 'top 65%', end: 'bottom 65%',
+  onUpdate: s => { document.querySelector('.tl-prog').style.height = (s.progress * 100) + '%'; }
+});
+
+gsap.utils.toArray('.tl-dot').forEach((dot, i) => {
+  ScrollTrigger.create({
+    trigger: dot, start: 'top 70%',
+    onEnter: () => dot.classList.add('lit')
+  });
+});
+
+/* ============================================================
+   13. METAMORPHOSIS CARDS — light on scroll entry
+   ============================================================ */
+['mc1','mc2','mc3'].forEach((id, i) => {
+  ScrollTrigger.create({
+    trigger: '#' + id, start: 'top 75%',
+    onEnter: () => {
+      setTimeout(() => document.getElementById(id).classList.add('active'), i * 200);
+    }
+  });
+});
+
+/* ============================================================
+   14. CONCEPT CARD SPOTLIGHT
+   ============================================================ */
+document.querySelectorAll('.cc').forEach(c => {
+  c.addEventListener('mousemove', e => {
+    const r = c.getBoundingClientRect();
+    c.style.setProperty('--mx', ((e.clientX - r.left) / r.width ) * 100 + '%');
+    c.style.setProperty('--my', ((e.clientY - r.top ) / r.height) * 100 + '%');
+  });
+});
+
+/* ============================================================
+   15. WILL TO POWER bars — fill on card hover
+   ============================================================ */
+const powCard = document.getElementById('pow-card');
+const bars = [
+  { fill: document.getElementById('p1'), val: document.getElementById('p1v'), pct: 78 },
+  { fill: document.getElementById('p2'), val: document.getElementById('p2v'), pct: 94 },
+  { fill: document.getElementById('p3'), val: document.getElementById('p3v'), pct: 87 },
+];
+function animateBars(enter) {
+  bars.forEach(b => {
+    const target = enter ? b.pct : 0;
+    b.fill.style.width = target + '%';
+    b.val.textContent  = target + '%';
+  });
+}
+powCard.addEventListener('mouseenter', () => animateBars(true));
+powCard.addEventListener('mouseleave', () => animateBars(false));
+
+/* ============================================================
+   16. WORK CARDS — 3D tilt
+   ============================================================ */
+document.querySelectorAll('.wk').forEach(w => {
+  w.addEventListener('mousemove', e => {
+    const r  = w.getBoundingClientRect();
+    const cx = (e.clientX - r.left) / r.width  - .5;
+    const cy = (e.clientY - r.top)  / r.height - .5;
+    w.style.transform = `perspective(800px) rotateX(${-cy * 7}deg) rotateY(${cx * 7}deg)`;
+  });
+  w.addEventListener('mouseleave', () => { w.style.transform = ''; });
+});
+
+/* ============================================================
+   17. ABYSS CANVAS 2D — falling text fragments
+   ============================================================ */
+(function abyssCanvas() {
+  const c   = document.getElementById('abyss-canvas-2d');
+  const ctx = c.getContext('2d');
+  let W, H, frags;
+
+  function resize() {
+    W = c.offsetWidth; H = c.offsetHeight;
+    c.width  = W * Math.min(devicePixelRatio, 2);
+    c.height = H * Math.min(devicePixelRatio, 2);
+    ctx.scale(Math.min(devicePixelRatio, 2), Math.min(devicePixelRatio, 2));
+    seed();
+  }
+
+  const words = ['αβυσσός','Nihil','Abgrund','Void','Tod','Chaos','Dunkel','Nacht','Schmerz','Stille','Ewigkeit'];
+
+  function seed() {
+    frags = Array.from({ length: 28 }, () => ({
+      text: words[Math.floor(Math.random() * words.length)],
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vy: .15 + Math.random() * .3,
+      size: 10 + Math.random() * 18,
+      a: .04 + Math.random() * .12,
+      rot: (Math.random() - .5) * .4,
+    }));
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    frags.forEach(f => {
+      f.y += f.vy;
+      if (f.y > H + 40) { f.y = -40; f.x = Math.random() * W; }
+      ctx.save();
+      ctx.translate(f.x, f.y);
+      ctx.rotate(f.rot);
+      ctx.globalAlpha = f.a;
+      ctx.fillStyle = '#d4c5a0';
+      ctx.font = `italic ${f.size}px "Cormorant Garamond"`;
+      ctx.fillText(f.text, 0, 0);
+      ctx.restore();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) { resize(); draw(); observer.disconnect(); }
+  });
+  observer.observe(c.parentElement);
+  window.addEventListener('resize', resize);
+})();
+
+/* ============================================================
+   18. THREE.JS HERO — galaxy particle system
+   ============================================================ */
+function initHeroGL() {
+  if (typeof THREE === 'undefined') return;
+
+  const canvas = document.getElementById('hero-canvas');
+  let W = innerWidth, H = innerHeight;
+
+  const scene    = new THREE.Scene();
+  scene.fog      = new THREE.FogExp2(0x050508, 0.01);
+
+  const cam = new THREE.PerspectiveCamera(60, W / H, 0.1, 500);
+  cam.position.set(0, 20, 55);
+  cam.lookAt(0, 0, 0);
+
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x050508, 1);
+
+  /* Soft circular sprite texture */
+  function makeSprite() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 32;
+    const g = c.getContext('2d');
+    const r = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+    r.addColorStop(0,   'rgba(255,255,255,1)');
+    r.addColorStop(.35, 'rgba(255,255,255,.7)');
+    r.addColorStop(1,   'rgba(0,0,0,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 32, 32);
+    return new THREE.CanvasTexture(c);
+  }
+
+  const N   = W < 768 ? 1400 : 3500;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(N * 3);
+  const col = new Float32Array(N * 3);
+
+  for (let i = 0; i < N; i++) {
+    /* Spiral galaxy arms */
+    const arm    = Math.floor(Math.random() * 3);
+    const tArm   = (arm / 3) * Math.PI * 2;
+    const r      = Math.pow(Math.random(), .55) * 44 + 0.5;
+    const theta  = tArm + r * 0.045 + (Math.random() - .5) * .8;
+    const spread = r * 0.12;
+
+    pos[i*3]   = Math.cos(theta) * r + (Math.random() - .5) * spread;
+    pos[i*3+1] = (Math.random() - .5) * 7;
+    pos[i*3+2] = Math.sin(theta) * r + (Math.random() - .5) * spread;
+
+    const t = Math.random();
+    if (t < .52) {         // antique gold
+      col[i*3]=.75+t*.2; col[i*3+1]=.5+t*.15; col[i*3+2]=.07+t*.1;
+    } else if (t < .75) { // deep crimson
+      col[i*3]=.5+Math.random()*.35; col[i*3+1]=.02; col[i*3+2]=.02;
+    } else if (t < .92) { // parchment white
+      col[i*3]=.65+Math.random()*.25; col[i*3+1]=.6+Math.random()*.2; col[i*3+2]=.45+Math.random()*.15;
+    } else {               // rare electric cyan
+      col[i*3]=0; col[i*3+1]=.7+Math.random()*.3; col[i*3+2]=1;
+    }
+  }
+
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('color',    new THREE.BufferAttribute(col, 3));
+
+  const mat = new THREE.PointsMaterial({
+    size: .38, vertexColors: true,
+    transparent: true, opacity: .88,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+    sizeAttenuation: true, map: makeSprite(), alphaTest: 0.001,
+  });
+
+  const galaxy = new THREE.Points(geo, mat);
+  scene.add(galaxy);
+
+  let mX = 0, mY = 0, tX = 0, tY = 0, time = 0;
+
+  addEventListener('mousemove', e => {
+    mX = (e.clientX / W - .5) * 2;
+    mY = (e.clientY / H - .5) * 2;
+  }, { passive: true });
+
+  function animate() {
+    requestAnimationFrame(animate);
+    time  += .0006;
+    tX += (mX - tX) * .04;
+    tY += (mY - tY) * .04;
+
+    galaxy.rotation.y = time;
+    galaxy.rotation.x = Math.sin(time * .4) * .06 + tY * .08;
+    cam.position.x    = Math.sin(time * .12) * 4;
+    cam.lookAt(0, 0, 0);
+
+    renderer.render(scene, cam);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    W = innerWidth; H = innerHeight;
+    cam.aspect = W / H;
+    cam.updateProjectionMatrix();
+    renderer.setSize(W, H);
+  });
+}
+
+/* ============================================================
+   19. LIGHTNING BOLTS
+   ============================================================ */
+function initLightning() {
+  const bolts = document.querySelectorAll('.lbolt');
+
+  function flash() {
+    const b = bolts[Math.floor(Math.random() * bolts.length)];
+    const delay = (Math.random() * 5 + 1.5) * 1000;
+
+    gsap.timeline()
+      .set(b, { scaleY: 0, opacity: 0, transformOrigin: 'top' })
+      .to(b, { scaleY: 1, opacity: .9, duration: .04 })
+      .to(b, { opacity: 0, duration: .06 })
+      .to(b, { opacity: .7, duration: .03 })
+      .to(b, { opacity: 0, duration: .08 })
+      .then(() => setTimeout(flash, delay));
+  }
+
+  // Stagger initial flash
+  bolts.forEach((_, i) => setTimeout(flash, i * 1800));
+}
+
+/* ============================================================
+   20. WEB AUDIO — ambient drone (on demand)
+   ============================================================ */
+let audioCtx = null, droneGain = null, audioOn = false;
+
+function initAudio() {
+  audioCtx  = new (window.AudioContext || window.webkitAudioContext)();
+  droneGain = audioCtx.createGain();
+  droneGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  droneGain.connect(audioCtx.destination);
+
+  // Deep drone: A1 (55Hz) + E2 (82.5Hz) for dark, philosophical tension
+  [[55, 1], [82.5, .45], [110, .2], [27.5, .6]].forEach(([freq, vol]) => {
+    const osc = audioCtx.createOscillator();
+    const g   = audioCtx.createGain();
+    osc.type = 'sine'; osc.frequency.value = freq;
+    g.gain.value = vol;
+    osc.connect(g); g.connect(droneGain);
+    osc.start();
+  });
+}
+
+document.getElementById('aud-btn').addEventListener('click', () => {
+  const btn = document.getElementById('aud-btn');
+  if (!audioCtx) initAudio();
+
+  if (!audioOn) {
+    droneGain.gain.linearRampToValueAtTime(.09, audioCtx.currentTime + 1.5);
+    audioOn = true; btn.classList.add('on');
+  } else {
+    droneGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+    audioOn = false; btn.classList.remove('on');
+  }
+});
+</script>
+</body>
+</html>
